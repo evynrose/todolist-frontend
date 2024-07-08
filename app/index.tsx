@@ -1,15 +1,8 @@
 import { Text, View } from "react-native";
-
+import ToDoList from "@/components/ToDoList";
+//return component to do list so it renders on screen
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Hello World, It's Evyn!</Text>
-    </View>
+    <ToDoList />
   );
 }
