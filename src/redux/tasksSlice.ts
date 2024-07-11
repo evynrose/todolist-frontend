@@ -1,4 +1,4 @@
-import { getTasks } from "@/api/todo";
+import { getTasks } from "@/src/api/todo";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Task {

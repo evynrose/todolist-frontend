@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "components/ToDoList.tsx", "redux/tasksSlice.ts", "redux/reducers.ts", "redux/store.ts"  ]
+, "src/components/ToDoList.tsx", "src/redux/tasksSlice.ts", "src/redux/reducers.ts", "src/redux/store.ts"  ]
 }
