@@ -27,7 +27,8 @@ const ToDoList: React.FC = () => {
 
   const handleAddTask = async () => {
     if (inputValue.trim()) {
-      const taskId = tasks.length
+      // const taskId = tasks.length
+      const taskId = Math.max(...tasks.map(task => task.id), 0) + 1
       dispatch(addTask({ taskId, inputValue }));
       await ToDoApi.addTask(inputValue, taskId)
       setInputValue('');
