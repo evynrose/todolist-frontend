@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, Button, View, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store"
-import { addTask, editTask, deleteTask } from "../redux/tasksSlice";
+import { addTask, editTask, deleteTask, fetchTasks } from "../redux/tasksSlice";
+import * as ToDoApi from "../api/todo"
+
 
 interface Task {
   id: number;
-  text: string;
+  task: string;
 }
 
 const ToDoList: React.FC = () => {
@@ -19,33 +21,41 @@ const ToDoList: React.FC = () => {
   const dispatch = useDispatch();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
 
-  const handleAddTask = () => {
+  useEffect(() => {
+    dispatch(fetchTasks())
+  }, [])
+
+  const handleAddTask = async () => {
     if (inputValue.trim()) {
-      dispatch(addTask(inputValue));
+      const taskId = tasks.length
+      dispatch(addTask({ taskId, inputValue }));
+      await ToDoApi.addTask(inputValue, taskId)
       setInputValue('');
     }
   };
 
-  const handleEditTask = () => {
+  const handleEditTask = async () => {
     if (inputValue.trim() && editMode.taskId !== null) {
       dispatch(editTask({ taskId: editMode.taskId, newText: inputValue }));
+      await ToDoApi.editTask(editMode.taskId, inputValue)
       setInputValue('');
       setEditMode({ enabled: false, taskId: null });
     }
   };
 
-  const handleDeleteTask = (taskId: number) => {
+  const handleDeleteTask = async (taskId: number) => {
     dispatch(deleteTask(taskId));
+    await ToDoApi.deleteTask(taskId)
   };
 
   const handleStartEdit = (task: Task) => {
-    setInputValue(task.text);
+    setInputValue(task.task);
     setEditMode({ enabled: true, taskId: task.id });
   };
 
   const renderItem = ({ item }: { item: Task }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.item}>{item.text}</Text>
+      <Text style={styles.item}>{item.task}</Text>
       <View style={styles.buttonsContainer}>
         <Button title="Edit" onPress={() => handleStartEdit(item)} />
         <Button title="Delete" onPress={() => handleDeleteTask(item.id)} />
@@ -114,12 +124,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderBottomColor: 'white',
+    borderBottomColor: 'purple',
     borderBottomWidth: 1,
   },
   item: {
-    color: "white",
-    fontSize: 18,
+    color: "purple",
+    fontSize: 25,
     flex: 1,
   },
   buttonsContainer: {

@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getTasks } from "@/api/todo";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Task {
   id: number;
-  text: string;
+  task: string;
 }
 
 interface TasksState {
@@ -13,12 +14,18 @@ const initialState: TasksState = {
   tasks: [],
 };
 
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks',async () => {
+  const tasks = await getTasks()
+  console.log(tasks);
+  return tasks
+})
+
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    addTask: (state, action: PayloadAction<string>) => {
-      state.tasks.push({ id: state.tasks.length, text: action.payload });
+    addTask: (state, action: PayloadAction<{taskId:number, inputValue:string}>) => {
+      state.tasks.push({ id: action.payload.taskId, task: action.payload.inputValue });
     },
     editTask: (
       state,
@@ -26,13 +33,20 @@ const tasksSlice = createSlice({
     ) => {
       const { taskId, newText } = action.payload;
       state.tasks = state.tasks.map((task) =>
-        task.id === taskId ? { ...task, text: newText } : task
+        task.id === taskId ? { ...task, task: newText } : task
       );
     },
     deleteTask: (state, action: PayloadAction<number>) => {
       const taskId = action.payload;
       state.tasks = state.tasks.filter((task) => task.id !== taskId);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchTasks.fulfilled, (state, action ) => {
+      const tasks = action.payload
+      state.tasks = tasks
+      console.log(tasks);
+    })
   },
 });
 
